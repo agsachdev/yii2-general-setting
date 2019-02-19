@@ -37,6 +37,9 @@ class AllSettingFieldsController extends Controller
      */
     public function actionIndex()
     {
+        if(!isset($_GET['sid']) || $_GET['sid'] == ''){
+            return $this->redirect(['/allsettings/']);
+        }
         $searchModel = new AllSettingFieldsSearch();
         $allSettings = AllSettings::find()->asArray()->all();
         $allSettings = ArrayHelper::map($allSettings, 'id', 'title');
@@ -45,6 +48,35 @@ class AllSettingFieldsController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'allSettings'=>$allSettings
+        ]);
+    }
+
+    public function actionBulkcreate(){
+        $model = new AllSettingFields();
+        $allSettings = AllSettings::find()->asArray()->all();
+        $allSettings = ArrayHelper::map($allSettings, 'id', 'title');
+        if ($model->load(Yii::$app->request->post())) {
+            $post = Yii::$app->request->post();
+            if(!empty($post['AllSettingFields'])){
+                foreach($post['AllSettingFields']['s_label'] as $k=>$v){
+                    $imodel = AllSettingFields::find()->where(['s_label'=>$v,'s_id'=>$post['AllSettingFields']['s_id']])->one();
+                    if(empty($imodel)){
+                        $imodel = new AllSettingFields();
+                        $imodel->s_label = $v;
+                    }
+                    $imodel->s_id = $post['AllSettingFields']['s_id'];
+                    $imodel->s_type = $post['AllSettingFields']['s_type'][$k];
+                    $imodel->s_value = $post['AllSettingFields']['s_value'][$k];
+                    $imodel->save();
+                    
+                }
+                return $this->redirect(['index', 'sid' => $post['AllSettingFields']['s_id']]);
+            }
+        }
+
+        return $this->render('_bulk', [
+            'model' => $model,
             'allSettings'=>$allSettings
         ]);
     }
@@ -73,7 +105,13 @@ class AllSettingFieldsController extends Controller
         $allSettings = AllSettings::find()->asArray()->all();
         $allSettings = ArrayHelper::map($allSettings, 'id', 'title');
        
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            $post = Yii::$app->request->post();
+            $imodel = AllSettingFields::find()->where(['s_label'=>$model->s_label,'s_id'=>$model->s_id])->one();
+            if(!empty($imodel)){
+                $model = $imodel;
+            }
+            $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

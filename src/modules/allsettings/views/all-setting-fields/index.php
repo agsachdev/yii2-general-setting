@@ -7,7 +7,7 @@ use yii\widgets\Pjax;
 /* @var $searchModel vendor\yii2generalsetting\modules\allsettings\models\AllSettingFieldsSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'All Setting Fields');
+$this->title = Yii::t('app', 'Setting Fields');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="all-setting-fields-index">
@@ -17,7 +17,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create All Setting Fields'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Create Setting Fields'), ['create?sid='.$_GET['sid']], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Bulk Create Setting Fields'), ['bulkcreate?sid='.$_GET['sid']], ['class' => 'btn btn-primary']) ?>
     </p>
 
     <?= GridView::widget([
@@ -25,9 +26,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            's_id',
+            
+            's_label',
             's_type',
             's_value:ntext',
 

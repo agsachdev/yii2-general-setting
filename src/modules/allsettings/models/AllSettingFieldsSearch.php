@@ -40,7 +40,7 @@ class AllSettingFieldsSearch extends AllSettingFields
      */
     public function search($params)
     {
-        $query = AllSettingFields::find();
+        $query = AllSettingFields::find()->where(["s_id"=>$_GET['sid']]);;
 
         // add conditions that should always apply here
 
